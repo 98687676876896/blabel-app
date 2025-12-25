@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+<meta charset="UTF-8">
+<title>تسجيل بلابل</title>
+
+<link rel="manifest" href="manifest.json">
+
+<style>
+body{
+  font-family: Arial;
+  direction: rtl;
+  background:#f2f2f2;
+  text-align:center;
+}
+.box, .card, .list{
+  background:#fff;
+  width:330px;
+  margin:15px auto;
+  padding:15px;
+  border-radius:10px;
+}
+input,select,button{
+  width:100%;
+  padding:8px;
+  margin:6px 0;
+}
+.card{ display:none; }
+table{
+  width:100%;
+  border-collapse: collapse;
+}
+td,th{
+  border:1px solid #ccc;
+  padding:5px;
+}
+.print{
+  background:#2196F3;
+  color:white;
+  border:none;
+}
+</style>
+</head>
+
+<body>
+
+<div class="box">
+<h3>استمارة تسجيل بلابل</h3>
+
+<input id="name" placeholder="الاسم الرباعي (اختياري)">
+
+<select id="age">
+<option value="">اختر العمر</option>
+<script>
+for(let i=6;i<=15;i++) document.write(`<option>${i}</option>`);
+</script>
+</select>
+
+<button onclick="register()">تسجيل</button>
+<p id="counter"></p>
+</div>
+
+<div class="card" id="card">
+<h3 id="cname"></h3>
+<p id="cage"></p>
+<p>لاعب بلابل مبتدئ</p>
+<p id="ctime"></p>
+<button class="print" onclick="window.print()">🖨️ طباعة البطاقة</button>
+</div>
+
+<div class="list">
+<h4>📋 قائمة المسجلين</h4>
+<table>
+<thead>
+<tr><th>#</th><th>الاسم</th><th>العمر</th><th>الوقت</th></tr>
+</thead>
+<tbody id="table"></tbody>
+</table>
+<button class="print" onclick="window.print()">🖨️ طباعة القائمة</button>
+</div>
+
+<script>
+let max=32;
+let data=JSON.parse(localStorage.getItem("players")||"[]");
+updateTable();
+
+function register(){
+  if(data.length>=max){ alert("اكتمل العدد"); return; }
+
+  let name=document.getElementById("name").value||"بدون اسم";
+  let age=document.getElementById("age").value;
+  if(!age){ alert("اختر العمر"); return; }
+
+  let time=new Date().toLocaleString("ar-SA");
+
+  document.getElementById("cname").innerText=name;
+  document.getElementById("cage").innerText="العمر: "+age;
+  document.getElementById("ctime").innerText="وقت التسجيل: "+time;
+  document.getElementById("card").style.display="block";
+
+  data.push({name,age,time});
+  localStorage.setItem("players",JSON.stringify(data));
+  updateTable();
+}
+
+function updateTable(){
+  document.getElementById("counter").innerText=
+    "عدد التسجيلات: "+data.length+"/32";
+
+  let html="";
+  data.forEach((p,i)=>{
+    html+=`<tr>
+      <td>${i+1}</td>
+      <td>${p.name}</td>
+      <td>${p.age}</td>
+      <td>${p.time}</td>
+    </tr>`;
+  });
+  document.getElementById("table").innerHTML=html;
+}
+</script>
+
+</body>
+</html>
